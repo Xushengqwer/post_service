@@ -1,0 +1,670 @@
+basePath: /api/v1
+definitions:
+  dto.AuditPostRequest:
+    properties:
+      post_id:
+        type: integer
+      reason:
+        description: omitempty 表示可选, max 限制长度
+        maxLength: 255
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.Stats'
+        description: 限制状态范围
+        maximum: 2
+        minimum: 0
+    required:
+    - post_id
+    - status
+    type: object
+  dto.CreatePostRequest:
+    properties:
+      author_avatar:
+        description: 作者头像 URL，可选
+        type: string
+      author_id:
+        description: 作者ID，必填 (假设是 UUID 或其他非空字符串)
+        type: string
+      author_username:
+        description: 作者用户名，必填，最大50字符
+        maxLength: 50
+        type: string
+      contact_qr_code:
+        description: 联系二维码 URL，可选，校验是否为 URL 或 URI (根据需要选择 url 或 uri)
+        type: string
+      content:
+        description: 帖子内容，必填，最大1000字符
+        maxLength: 1000
+        type: string
+      price_per_unit:
+        description: 单价，可选，大于等于0 (omitempty 表示可选)
+        minimum: 0
+        type: number
+      title:
+        description: 帖子标题，必填，最大100字符
+        maxLength: 100
+        type: string
+    required:
+    - author_id
+    - author_username
+    - content
+    - title
+    type: object
+  dto.UpdateOfficialTagRequest:
+    properties:
+      official_tag:
+        allOf:
+        - $ref: '#/definitions/enums.OfficialTag'
+        description: 新的官方标签值，必填，并限制范围 (假设最大值为 3)
+        maximum: 3
+        minimum: 0
+      post_id:
+        description: 帖子ID，必填
+        type: integer
+    required:
+    - official_tag
+    - post_id
+    type: object
+  enums.OfficialTag:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      OfficialTagCertified: 官方认证
+      OfficialTagDeposit: 预付保证金
+      OfficialTagNone: 无标签
+      OfficialTagRapid: 急速响应
+    x-enum-varnames:
+    - OfficialTagNone
+    - OfficialTagCertified
+    - OfficialTagDeposit
+    - OfficialTagRapid
+  enums.Stats:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      Approved: 1 审核通过
+      Pending: 0 待审核
+      Rejected: 2 拒绝
+    x-enum-varnames:
+    - Pending
+    - Approved
+    - Rejected
+  vo.BaseResponseWrapper:
+    properties:
+      code:
+        description: 成功时为 0, 错误时为具体错误码
+        example: 0
+        type: integer
+      message:
+        description: 成功或错误消息
+        example: success
+        type: string
+    type: object
+  vo.ListPostsAdminResponseWrapper:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/vo.ListPostsByConditionResponse'
+        description: 使用具体的 vo.ListPostsByConditionResponse
+      message:
+        example: success
+        type: string
+    type: object
+  vo.ListPostsByConditionResponse:
+    properties:
+      posts:
+        description: 帖子列表
+        items:
+          $ref: '#/definitions/vo.PostAdminResponse'
+        type: array
+      total:
+        description: 帖子总数
+        type: integer
+    type: object
+  vo.ListPostsByUserIDResponse:
+    properties:
+      next_cursor:
+        description: 下一个游标，nil 表示无更多数据
+        type: integer
+      posts:
+        description: 帖子列表
+        items:
+          $ref: '#/definitions/vo.PostResponse'
+        type: array
+    type: object
+  vo.ListPostsByUserIDResponseWrapper:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/vo.ListPostsByUserIDResponse'
+        description: 使用具体的 vo.ListPostsByUserIDResponse
+      message:
+        example: success
+        type: string
+    type: object
+  vo.PostAdminResponse:
+    properties:
+      author_avatar:
+        description: 作者头像
+        type: string
+      author_id:
+        description: 作者ID
+        type: string
+      author_username:
+        description: 作者用户名
+        type: string
+      created_at:
+        description: 创建时间
+        type: string
+      id:
+        description: 帖子ID
+        type: integer
+      official_tag:
+        allOf:
+        - $ref: '#/definitions/enums.OfficialTag'
+        description: 官方标签
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.Stats'
+        description: 帖子状态（0=待审核, 1=已审核, 2=拒绝）
+      title:
+        description: 帖子标题
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      view_count:
+        description: 浏览量
+        type: integer
+    type: object
+  vo.PostDetailResponse:
+    properties:
+      author_avatar:
+        description: 作者头像
+        type: string
+      author_id:
+        description: 作者ID
+        type: string
+      author_username:
+        description: 作者用户名
+        type: string
+      contact_qr_code:
+        description: 联系二维码
+        type: string
+      content:
+        description: 帖子内容
+        type: string
+      created_at:
+        description: 创建时间
+        type: string
+      id:
+        description: 帖子详情ID
+        type: integer
+      post_id:
+        description: 帖子ID
+        type: integer
+      price_per_unit:
+        description: 单价
+        type: number
+      updated_at:
+        description: 更新时间
+        type: string
+    type: object
+  vo.PostDetailResponseWrapper:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/vo.PostDetailResponse'
+        description: 使用具体的 vo.PostDetailResponse
+      message:
+        example: success
+        type: string
+    type: object
+  vo.PostResponse:
+    properties:
+      author_avatar:
+        description: 作者头像
+        type: string
+      author_id:
+        description: 作者ID
+        type: string
+      author_username:
+        description: 作者用户名
+        type: string
+      created_at:
+        description: 创建时间
+        type: string
+      id:
+        description: 帖子ID
+        type: integer
+      status:
+        description: 帖子状态，0=待审核, 1=已审核, 2=拒绝
+        type: integer
+      title:
+        description: 帖子标题
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      view_count:
+        description: 浏览量
+        type: integer
+    type: object
+  vo.PostResponseWrapper:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/vo.PostResponse'
+        description: 使用具体的 vo.PostResponse
+      message:
+        example: success
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: your_support_email@example.com
+    name: API Support Team
+    url: https://github.com/Xushengqwer/go-backend-learning
+  description: 帖子服务，提供帖子发布、查询、管理等功能。
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Post Service API
+  version: "1.0"
+paths:
+  /admin/posts:
+    get:
+      consumes:
+      - application/json
+      description: 出于管理目的，根据各种过滤条件检索分页的帖子列表。使用查询参数进行过滤和分页。
+      parameters:
+      - description: 按精确的帖子 ID 过滤
+        format: uint64
+        in: query
+        name: id
+        type: integer
+      - description: 按帖子标题过滤（模糊匹配）
+        in: query
+        name: title
+        type: string
+      - description: 按作者用户名过滤（模糊匹配）
+        in: query
+        name: author_username
+        type: string
+      - description: 按帖子状态过滤 (0=待审核, 1=已审核, 2=已拒绝)
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      - description: 按官方标签过滤 (例如, 0=无, 1=认证)
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: official_tag
+        type: integer
+      - description: 按最小浏览量过滤
+        format: int64
+        in: query
+        name: view_count_min
+        type: integer
+      - description: 按最大浏览量过滤
+        format: int64
+        in: query
+        name: view_count_max
+        type: integer
+      - default: created_at
+        description: 排序字段 (created_at 或 updated_at)
+        enum:
+        - created_at
+        - updated_at
+        in: query
+        name: order_by
+        type: string
+      - default: false
+        description: 是否降序排序 (true 为 DESC, false/省略为 ASC)
+        in: query
+        name: order_desc
+        type: boolean
+      - description: 页码（从 1 开始）
+        format: int
+        in: query
+        minimum: 1
+        name: page
+        required: true
+        type: integer
+      - description: 每页帖子数量
+        format: int
+        in: query
+        minimum: 1
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子检索成功" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.ListPostsAdminResponseWrapper'
+        "400":
+          description: 无效的输入参数（例如，无效的 page, page_size, status）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 检索帖子时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 按条件列出帖子 (管理员)
+      tags:
+      - admin-posts (管理员-帖子)
+  /admin/posts/{id}/official-tag:
+    put:
+      consumes:
+      - application/json
+      description: 管理员更新特定帖子的官方标签。需要在 URL 路径中提供帖子 ID，并在请求体中提供标签详情。
+      parameters:
+      - description: 要更新的帖子 ID
+        format: uint64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新官方标签请求体 (请求体中的 PostID 是冗余的，请使用路径中的 ID)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateOfficialTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 官方标签更新成功" // <--- 修改 (无 Data)
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "400":
+          description: 无效的请求负载，无效的标签值，或路径 ID 与请求体 ID 不匹配" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "404":
+          description: 帖子未找到" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 更新标签时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 更新帖子官方标签 (管理员)
+      tags:
+      - admin-posts (管理员-帖子)
+  /admin/posts/audit:
+    post:
+      consumes:
+      - application/json
+      description: 管理员更新帖子的状态（以及可选的原因）。需要在请求体中提供审核详情。
+      parameters:
+      - description: 审核帖子请求体
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuditPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子审核成功" // <--- 修改 (无 Data)
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "400":
+          description: 无效的请求负载（例如，缺少字段，无效的状态）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "404":
+          description: 帖子未找到" // <-- 添加404情况
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 审核过程中发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 审核帖子
+      tags:
+      - admin-posts (管理员-帖子)
+  /hot-posts:
+    get:
+      consumes:
+      - application/json
+      description: 使用基于游标的分页方式，检索热门帖子列表。使用查询参数来传递游标和数量限制。
+      parameters:
+      - description: 上一页最后一个帖子的 ID，首页省略
+        format: uint64
+        in: query
+        name: last_post_id
+        type: integer
+      - description: 每页帖子数量
+        format: int
+        in: query
+        minimum: 1
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 热门帖子检索成功。" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.ListPostsByUserIDResponseWrapper'
+        "400":
+          description: 无效的输入参数（例如，无效的 limit 或 last_post_id 格式）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 检索热门帖子时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 通过游标获取热门帖子
+      tags:
+      - hot-posts (热门帖子)
+  /hot-posts/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过帖子的 ID 检索特定热门帖子的详细信息。需要在 URL 路径中提供帖子 ID，并从上下文中获取 UserID。
+      parameters:
+      - description: 帖子 ID
+        format: uint64
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 热门帖子详情检索成功" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.PostDetailResponseWrapper'
+        "400":
+          description: 无效的帖子 ID 格式" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "401":
+          description: 在上下文中未找到用户 ID（未授权）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "404":
+          description: 热门帖子详情未找到" // <-- 添加404情况
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 检索热门帖子详情时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 根据帖子 ID 获取热门帖子详情
+      tags:
+      - hot-posts (热门帖子)
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: 使用基于游标的分页方式，检索特定用户的分页帖子列表。需要在查询字符串中提供用户 ID 和分页参数。
+      parameters:
+      - description: 用户 ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: 游标（上一页最后一个帖子的 ID），首页省略
+        format: uint64
+        in: query
+        name: cursor
+        type: integer
+      - description: 每页帖子数量
+        format: int
+        in: query
+        minimum: 1
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子检索成功" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.ListPostsByUserIDResponseWrapper'
+        "400":
+          description: 无效的输入参数（例如，缺少 user_id，无效的 page_size）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 检索帖子时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 根据用户 ID 列出帖子
+      tags:
+      - posts (帖子)
+    post:
+      consumes:
+      - application/json
+      description: 使用提供的详情创建一个新帖子。请求体中需要包含作者信息。
+      parameters:
+      - description: 创建帖子请求体
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子创建成功" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.PostResponseWrapper'
+        "400":
+          description: 无效的请求负载（例如，缺少字段，验证错误）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 创建帖子时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 创建新帖子
+      tags:
+      - posts (帖子)
+  /posts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 通过帖子的 ID 软删除一个帖子。需要在 URL 路径中提供帖子 ID。
+      parameters:
+      - description: 帖子 ID
+        format: uint64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子删除成功" // <--- 修改 (无 Data)
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "400":
+          description: 无效的帖子 ID 格式" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 删除帖子时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 删除帖子
+      tags:
+      - posts (帖子)
+  /posts/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过帖子的 ID 检索特定帖子的详细信息。需要在 URL 路径中提供帖子 ID，并从上下文（例如，通过中间件）获取 UserID。
+      parameters:
+      - description: 帖子 ID
+        format: uint64
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 帖子详情检索成功" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.PostDetailResponseWrapper'
+        "400":
+          description: 无效的帖子 ID 格式" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "401":
+          description: 在上下文中未找到用户 ID（未授权）" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+        "500":
+          description: 检索帖子详情时发生内部服务器错误" // <--- 修改
+          schema:
+            $ref: '#/definitions/vo.BaseResponseWrapper'
+      summary: 根据帖子 ID 获取帖子详情
+      tags:
+      - posts (帖子)
+swagger: "2.0"
