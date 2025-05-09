@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"github.com/Xushengqwer/go-common/commonerrors"
 	"github.com/Xushengqwer/go-common/core" // 导入日志库
+	"github.com/Xushengqwer/go-common/models/enums"
 	"github.com/Xushengqwer/post_service/mq/producer"
 	"go.uber.org/zap" // 导入 zap
 	"gorm.io/gorm"
 
 	"github.com/Xushengqwer/post_service/models/dto"
-	"github.com/Xushengqwer/post_service/models/enums" // 导入 enums
 	"github.com/Xushengqwer/post_service/models/vo"
 	"github.com/Xushengqwer/post_service/repo/mysql"
 )

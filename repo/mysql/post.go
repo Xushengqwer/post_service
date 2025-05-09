@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Xushengqwer/go-common/commonerrors"
 	"github.com/Xushengqwer/go-common/core"
+	"github.com/Xushengqwer/go-common/models/enums"
 	"go.uber.org/zap"
 	"strings"
 	"sync"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/Xushengqwer/post_service/constant"        // 引入常量，如 SyncBatchSize
 	"github.com/Xushengqwer/post_service/models/entities" // 引入数据库实体定义
-	"github.com/Xushengqwer/post_service/models/enums"    // 引入状态等枚举
 	// 建议: 如果使用自定义错误，在这里导入
 	// "github.com/Xushengqwer/go-common/commonerrors"
 )

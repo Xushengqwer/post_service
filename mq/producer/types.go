@@ -1,6 +1,6 @@
 package producer
 
-import "github.com/Xushengqwer/post_service/models/enums"
+import "github.com/Xushengqwer/go-common/models/enums"
 
 // PostEvent 表示 Kafka 传递的帖子事件结构体
 type PostEvent struct {
@@ -10,7 +10,7 @@ type PostEvent struct {
 	AuthorID       string            `json:"author_id"`       // 作者ID
 	AuthorAvatar   string            `json:"author_avatar"`   // 作者头像
 	AuthorUsername string            `json:"author_username"` // 作者用户名
-	Status         enums.Stats       `json:"status"`          // 帖子状态
+	Status         enums.Status      `json:"status"`          // 帖子状态
 	ViewCount      int64             `json:"view_count"`      // 查看次数
 	OfficialTag    enums.OfficialTag `json:"official_tag"`    // 官方标签
 	PricePerUnit   float64           `json:"price_per_unit"`  // 每单位价格

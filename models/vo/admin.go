@@ -1,7 +1,7 @@
 package vo
 
 import (
-	"github.com/Xushengqwer/post_service/models/enums"
+	"github.com/Xushengqwer/go-common/models/enums"
 	"time"
 )
 
@@ -12,7 +12,7 @@ type PostAdminResponse struct {
 	AuthorID       string            `json:"author_id"`       // 作者ID
 	AuthorUsername string            `json:"author_username"` // 作者用户名
 	AuthorAvatar   string            `json:"author_avatar"`   // 作者头像
-	Status         enums.Stats       `json:"status"`          // 帖子状态（0=待审核, 1=已审核, 2=拒绝）
+	Status         enums.Status      `json:"status"`          // 帖子状态（0=待审核, 1=已审核, 2=拒绝）
 	ViewCount      int64             `json:"view_count"`      // 浏览量
 	OfficialTag    enums.OfficialTag `json:"official_tag"`    // 官方标签
 	CreatedAt      time.Time         `json:"created_at"`      // 创建时间

@@ -5,6 +5,8 @@ import (
 	"errors" // 用于错误检查，例如 errors.Is
 	"fmt"
 	"github.com/Xushengqwer/go-common/constants" // 导入包含 Context Key 的包
+	"github.com/Xushengqwer/go-common/models/enums"
+
 	// 引入项目内的包和公共模块
 	"github.com/Xushengqwer/go-common/commonerrors" // 假设用于 ErrNotFound 等
 	"github.com/Xushengqwer/go-common/core"
@@ -13,7 +15,7 @@ import (
 
 	"github.com/Xushengqwer/post_service/models/dto"
 	"github.com/Xushengqwer/post_service/models/entities"
-	"github.com/Xushengqwer/post_service/models/enums"
+
 	"github.com/Xushengqwer/post_service/models/vo"
 	"github.com/Xushengqwer/post_service/mq/producer"
 	"github.com/Xushengqwer/post_service/repo/mysql"

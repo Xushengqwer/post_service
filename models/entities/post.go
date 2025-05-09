@@ -3,7 +3,7 @@ package entities
 import (
 	"database/sql"
 	"github.com/Xushengqwer/go-common/models/entities"
-	"github.com/Xushengqwer/post_service/models/enums"
+	"github.com/Xushengqwer/go-common/models/enums"
 )
 
 // Post 帖子简略实体
@@ -41,7 +41,7 @@ type Post struct {
 	// 状态，枚举类型：0=待审核, 1=已审核, 2=拒绝
 	// - 类型: int，使用整数表示枚举值，便于扩展和查询
 	// - GORM 标签: type:int 指定整数类型，default:0 设置默认值为待审核
-	Status enums.Stats `gorm:"type:int;default:0"`
+	Status enums.Status `gorm:"type:int;default:0"`
 
 	// 浏览量，统计帖子的浏览次数
 	// - 类型: int64，记录浏览次数，默认值为0

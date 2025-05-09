@@ -3,7 +3,6 @@ module github.com/Xushengqwer/post_service
 go 1.23.7
 
 require (
-	github.com/Xushengqwer/go-common v0.0.0-20250503075111-ddb5c0d69f7a
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-faker/faker/v4 v4.6.1
 	github.com/redis/go-redis/v9 v9.8.0
@@ -23,6 +22,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/Xushengqwer/go-common v0.0.0-20250509103604-c7192c2e2d7f // indirect
 	github.com/bytedance/sonic v1.13.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect

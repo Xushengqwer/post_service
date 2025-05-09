@@ -3,12 +3,12 @@ package main
 import (
 	"database/sql" // 如果 AuditReason 需要设为 NULL
 	"fmt"
+	"github.com/Xushengqwer/go-common/models/enums"
 	"math/rand"
 	"strings"
 	"time"
 
 	"github.com/Xushengqwer/post_service/models/entities"
-	"github.com/Xushengqwer/post_service/models/enums"
 
 	"github.com/Xushengqwer/go-common/core" // 导入 ZapLogger
 	"github.com/go-faker/faker/v4"
@@ -28,9 +28,9 @@ func RunSeeder(db *gorm.DB, logger *core.ZapLogger, numPosts int) error {
 	var postsToCreate []*entities.Post
 	// 使用 faker 生成更多样化的数据
 	for i := 0; i < numPosts; i++ {
-		authorID := faker.UUIDHyphenated()  // 随机 UUID 作为 AuthorID
-		status := enums.Stats(rand.Intn(3)) // 随机状态 0, 1, 2
-		var auditReason sql.NullString      // 准备审核原因
+		authorID := faker.UUIDHyphenated()   // 随机 UUID 作为 AuthorID
+		status := enums.Status(rand.Intn(3)) // 随机状态 0, 1, 2
+		var auditReason sql.NullString       // 准备审核原因
 
 		// 如果是拒绝状态，可以随机生成一个原因
 		if status == enums.Rejected {

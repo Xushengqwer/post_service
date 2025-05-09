@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt" // 需要导入 fmt
+	"github.com/Xushengqwer/go-common/models/enums"
 	"time"
 
 	"github.com/Xushengqwer/go-common/commonerrors"
@@ -14,7 +15,6 @@ import (
 
 	"github.com/Xushengqwer/post_service/models/dto"
 	"github.com/Xushengqwer/post_service/models/entities"
-	"github.com/Xushengqwer/post_service/models/enums"
 )
 
 // PostAdminRepository 定义了帖子管理员相关的数据库操作接口。
@@ -29,7 +29,7 @@ type PostAdminRepository interface {
 	// - 用于管理员审核帖子（通过/拒绝）或系统自动更新状态。
 	// - reason (sql.NullString): 使用 sql.NullString 以区分 NULL 和空字符串。
 	// - 注意: 如果记录未找到或已被软删除，应返回明确的错误。
-	UpdatePostStatus(ctx context.Context, postID uint64, status enums.Stats, reason sql.NullString) error
+	UpdatePostStatus(ctx context.Context, postID uint64, status enums.Status, reason sql.NullString) error
 
 	// ListPostsByCondition 根据多种可选条件分页查询帖子列表。
 	// - 服务于管理员后台的复杂查询和筛选需求。
@@ -78,7 +78,7 @@ func (r *postAdminRepository) GetPostByID(ctx context.Context, id uint64) (*enti
 }
 
 // UpdatePostStatus 实现更新帖子状态和原因的逻辑。
-func (r *postAdminRepository) UpdatePostStatus(ctx context.Context, postID uint64, status enums.Stats, reason sql.NullString) error {
+func (r *postAdminRepository) UpdatePostStatus(ctx context.Context, postID uint64, status enums.Status, reason sql.NullString) error {
 	// 准备需要更新的字段 map。
 	// 使用 map 可以确保只更新指定的字段。
 	updateData := map[string]interface{}{

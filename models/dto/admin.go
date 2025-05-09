@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/Xushengqwer/post_service/models/enums"
+	"github.com/Xushengqwer/go-common/models/enums"
 )
 
 // ListPostsByConditionRequest 定义管理员分页条件查询帖子的请求数据结构
@@ -9,7 +9,7 @@ type ListPostsByConditionRequest struct {
 	ID             *uint64            `form:"id" json:"id,omitempty"`                             // 帖子ID，若存在则按主键查询，可选
 	Title          *string            `form:"title" json:"title,omitempty"`                       // 标题模糊查询，可选
 	AuthorUsername *string            `form:"author_username" json:"author_username,omitempty"`   // 作者用户名模糊查询，可选
-	Status         *enums.Stats       `form:"status" json:"status,omitempty"`                     // 状态筛选，可选（0=待审核, 1=已审核, 2=拒绝）
+	Status         *enums.Status      `form:"status" json:"status,omitempty"`                     // 状态筛选，可选（0=待审核, 1=已审核, 2=拒绝）
 	OfficialTag    *enums.OfficialTag `form:"official_tag" json:"official_tag,omitempty"`         // 官方标签筛选，可选
 	ViewCountMin   *int64             `form:"view_count_min" json:"view_count_min,omitempty"`     // 浏览量下限，可选
 	ViewCountMax   *int64             `form:"view_count_max" json:"view_count_max,omitempty"`     // 浏览量上限，可选
@@ -21,9 +21,9 @@ type ListPostsByConditionRequest struct {
 
 // AuditPostRequest 定义审核帖子的请求数据结构
 type AuditPostRequest struct {
-	PostID uint64      `json:"post_id" binding:"required"`
-	Status enums.Stats `json:"status" binding:"min=0,max=2"`       // 限制状态范围
-	Reason string      `json:"reason" binding:"omitempty,max=255"` // omitempty 表示可选, max 限制长度
+	PostID uint64       `json:"post_id" binding:"required"`
+	Status enums.Status `json:"status" binding:"min=0,max=2"`       // 限制状态范围
+	Reason string       `json:"reason" binding:"omitempty,max=255"` // omitempty 表示可选, max 限制长度
 }
 
 // UpdateOfficialTagRequest 定义更新帖子官方标签的请求数据结构
