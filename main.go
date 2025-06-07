@@ -77,6 +77,17 @@ func main() {
 		cfg.ServerConfig.Port = port
 		log.Printf("通过环境变量覆盖了 ServerConfig.Port: %s\n", port)
 	}
+
+	// --- 这是修正后的部分 ---
+	if timeoutStr := os.Getenv("SERVERCONFIG_REQUESTTIMEOUT"); timeoutStr != "" {
+		// 将字符串转换为整数 (代表秒)
+		if timeoutSec, err := strconv.Atoi(timeoutStr); err == nil {
+			// 将整数秒转换为 time.Duration 类型
+			cfg.ServerConfig.RequestTimeout = time.Duration(timeoutSec) * time.Second
+			log.Printf("通过环境变量覆盖了 ServerConfig.RequestTimeout: %v\n", cfg.ServerConfig.RequestTimeout)
+		}
+	}
+
 	if level := os.Getenv("ZAPCONFIG_LEVEL"); level != "" {
 		cfg.ZapConfig.Level = level
 		log.Printf("通过环境变量覆盖了 ZapConfig.Level: %s\n", level)

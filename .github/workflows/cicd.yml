@@ -97,12 +97,14 @@ jobs:
             docker stop ${CONTAINER_NAME} || true
             docker rm ${CONTAINER_NAME} || true
 
+
             echo "启动新容器并注入 post_service 的生产环境变量..."
             docker run -d \
               -p ${HOST_PORT}:${{ env.APP_CONTAINER_PORT }} \
               --name ${CONTAINER_NAME} \
               --network ${DOCKER_NETWORK_NAME} \
               -e SERVERCONFIG_PORT="${{ env.APP_CONTAINER_PORT }}" \
+              -e SERVERCONFIG_REQUESTTIMEOUT="60" \
               -e ZAPCONFIG_LEVEL="info" \
               -e GORMLOGCONFIG_LEVEL="warn" \
               -e TRACERCONFIG_ENABLED="false" \
