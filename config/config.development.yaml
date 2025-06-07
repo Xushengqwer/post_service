@@ -17,7 +17,7 @@ gormLogConfig:
 serverConfig:                     # 注意：您的 PostConfig 里有两个 ServerConfig 字段，这里以 yaml key "serverConfig" 为准
   listen_addr: "0.0.0.0"          # 监听所有网络接口 (容器内推荐)
   port: "8082"                    # 开发环境常用的端口
-  requestTimeout: "60s"             # 请求超时时间（单位：秒, 需要确认您的 LoadConfig 如何解析）
+  requestTimeout: 60s # 例如 30 秒
   # 或者如果您 LoadConfig 能解析时间字符串:
   # requestTimeout: "60s"
 
