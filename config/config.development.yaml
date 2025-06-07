@@ -1,0 +1,88 @@
+# Post Service - Development Configuration
+
+# Zap 日志配置 (来自 go-common)
+zapConfig:
+  level: "debug"    # 开发环境使用 debug 级别，方便查看详细日志
+  encoding: "console" # 控制台友好输出格式 (可选: "json")
+  # output_path 和 error_output 在公共模块中似乎被固定为 stdout/stderr，此处省略
+
+# GORM 日志配置 (来自 go-common)
+gormLogConfig:
+  level: "info"                   # GORM 日志级别 (info, warn, error, silent)，info 能看到执行的 SQL
+  slowThresholdMs: 200            # 慢查询阈值 (毫秒)，超过此时间的 SQL 会有 Warn 日志
+  skipCallerLookup: false         # 是否跳过查找 GORM 调用者（开启可轻微提升性能，但日志中不显示文件:行号）
+  ignoreRecordNotFoundError: true # 是否忽略 GORM 的 ErrRecordNotFound 错误日志（通常推荐 true，避免大量 Not Found 日志）
+
+# 服务器配置 (来自 go-common, 但 serverConfig 重复了, 以 yaml key 为准)
+serverConfig:                     # 注意：您的 PostConfig 里有两个 ServerConfig 字段，这里以 yaml key "serverConfig" 为准
+  listen_addr: "0.0.0.0"          # 监听所有网络接口 (容器内推荐)
+  port: "8082"                    # 开发环境常用的端口
+  requestTimeout: "60s"             # 请求超时时间（单位：秒, 需要确认您的 LoadConfig 如何解析）
+  # 或者如果您 LoadConfig 能解析时间字符串:
+  # requestTimeout: "60s"
+
+# 分布式追踪配置 (来自 go-common)
+tracerConfig:
+  enabled: true                     # 启用追踪
+  exporter_type: "stdout"           # 开发时用 stdout 最简单，直接打印追踪信息
+  # exporter_type: "otlp_grpc"      # 或者配置为 OTLP gRPC (需要 Collector 运行在 localhost:4317)
+  # exporter_endpoint: "localhost:4317"
+  sampler_type: "parent_based_traceid_ratio" # 推荐的采样策略
+  sampler_param: 1.0                # 开发时 100% 采样
+
+# MySQL 配置 (自定义)
+mysqlConfig:
+  write: # 主库配置
+    dsn: "root:root@tcp(127.0.0.1:3306)/doer_post_service?charset=utf8mb4&parseTime=True&loc=Local"
+    # 注意: 这里的主机名本来应该是 docker compose 中的服务名 'mysql-primary'
+  read:  # 从库配置列表
+    - dsn: "root:root@tcp(127.0.0.1:3307)/doer_post_service?charset=utf8mb4&parseTime=True&loc=Local"
+      # 注意: 这里的主机名本来应该是 docker compose 中的服务名 'mysql-replica'，端口是容器内部端口 3306
+
+  # 共享连接池设置
+  max_idle_conn: 10
+  max_open_conn: 100 # 确保足够大
+  conn_max_lifetime: 3600
+
+
+# Redis 配置 (自定义)
+redisConfig:
+  address: "127.0.0.1"            # 连接本地 Docker 启动的 Redis
+  port: 6379                      # Redis 默认端口 (如果 Docker 映射了其他主机端口，这里也要改)
+  password: "root"                # Docker Compose 中设置的 Redis 密码
+  db: 0                           # 使用 Redis 的 0 号数据库
+  dial_timeout: 5000000000        # 连接超时: 5 秒 (纳秒)
+  read_timeout: 3000000000        # 读取超时: 3 秒 (纳秒)
+  write_timeout: 3000000000       # 写入超时: 3 秒 (纳秒)
+  pool_size: 10                   # 连接池大小 (可选，go-redis 有默认值)
+  min_idle_conns: 3               # 最小空闲连接数 (可选)
+
+# Kafka 配置 (自定义)
+kafkaConfig:
+  brokers:
+    - "localhost:9092"            # 连接本地 Docker 启动的 Kafka Broker (外部访问端口)
+  consumer_group_id: "post_service_dev_group" # 开发环境消费者组 ID (可以根据需要修改)
+  topics:
+    postPendingAudit: "post_pending_audit"
+    postAuditApproved: "post_audit_approved"
+    postAuditRejected: "post_audit_rejected"
+    postDeleted: "post_deleted"
+
+
+# viewSync 包含了浏览量同步任务的配置
+viewSync:
+  batchSize: 50        # 每个批次处理的帖子数量
+  concurrencyLevel: 5   # 并发处理的 worker 数量
+  scanBatchSize: 1000
+
+
+# Tencent Cloud Object Storage (COS) 配置 - 用于帖子详情图
+postDetailImagesCosConfig: # 您可以选择一个描述性的键名
+  secret_id: "" # 请替换为您的真实 SecretId (通常与账户关联，可共用)
+  secret_key: "" # 请替换为您的真实 SecretKey (通常与账户关联，可共用)
+  bucket_name: ""
+  app_id: ""
+  region: ""
+  # 对于“公有读、私有写”的桶，BaseURL 通常是COS提供的默认存储桶域名
+  # 或者您配置的CDN域名（如果使用了CDN）
+  base_url: ""

@@ -1,0 +1,54 @@
+# Go 构建产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+post_service # 如果你的 Go 程序编译后的可执行文件名是 post_service
+
+# 测试缓存和覆盖率文件
+test.out
+test.coverprofile
+*.prof
+*.cover
+
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# IDE / 编辑器特定文件
+.idea/            # 针对 JetBrains IDE (如 GoLand)
+.vscode/          # 针对 VS Code
+*.swp
+*~
+*.sublime-project
+*.sublime-workspace
+
+# 操作系统生成的文件
+.DS_Store         # macOS
+Thumbs.db         # Windows
+ehthumbs.db       # Windows
+
+# Docker 运行时数据 (根据你的 'docker-data' 目录，这非常重要！)
+docker-data/
+
+# 生成的 Swagger/OpenAPI 文档 (如果这些是由 swag init 等工具生成的)
+# 如果你手动编辑 swagger.json 或 swagger.yaml, 则不要忽略它们。
+# docs/docs.go
+# docs/swagger.json
+# docs/swagger.yaml
+
+# 本地配置文件 (如果包含敏感信息或不应提交的本地配置)
+# 例如: config.development.secret.yaml
+
+# 环境变量文件
+.env
+*.env
+!.env.example # 通常 .env.example 文件是需要提交的
+
+# Go 工具产生的临时文件
+*.[oa]
+
+# vendor 目录 (如果使用 Go Modules，通常不需要提交 vendor，除非你特意要这样做)
+# vendor/
