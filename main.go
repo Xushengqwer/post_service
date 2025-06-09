@@ -1,15 +1,12 @@
 package main
 
 import (
-	_ "github.com/Xushengqwer/post_service/docs" // 确保导入了 docs 包
-	"net"
-	"strconv"
-	"strings"
-
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	_ "github.com/Xushengqwer/post_service/docs" // 确保导入了 docs 包
 	"log"
 	"net/http"
 	"os"
@@ -69,101 +66,13 @@ func main() {
 		log.Fatalf("FATAL: 加载配置失败 (%s): %v", configFile, err)
 	}
 
-	// --- 手动从环境变量覆盖关键配置 (最终修正版) ---
-	log.Println("检查环境变量以覆盖文件配置...")
-
-	// Server, Log, Tracer
-	if port := os.Getenv("SERVERCONFIG_PORT"); port != "" {
-		cfg.ServerConfig.Port = port
-		log.Printf("通过环境变量覆盖了 ServerConfig.Port: %s\n", port)
+	// --- [新增] 打印最终生效的配置以供调试 ---
+	configBytes, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		log.Fatalf("无法序列化配置以进行打印: %v", err)
 	}
-
-	// --- 这是修正后的部分 ---
-	if timeoutStr := os.Getenv("SERVERCONFIG_REQUESTTIMEOUT"); timeoutStr != "" {
-		// 将字符串转换为整数 (代表秒)
-		if timeoutSec, err := strconv.Atoi(timeoutStr); err == nil {
-			// 将整数秒转换为 time.Duration 类型
-			cfg.ServerConfig.RequestTimeout = time.Duration(timeoutSec) * time.Second
-			log.Printf("通过环境变量覆盖了 ServerConfig.RequestTimeout: %v\n", cfg.ServerConfig.RequestTimeout)
-		}
-	}
-
-	if level := os.Getenv("ZAPCONFIG_LEVEL"); level != "" {
-		cfg.ZapConfig.Level = level
-		log.Printf("通过环境变量覆盖了 ZapConfig.Level: %s\n", level)
-	}
-	if level := os.Getenv("GORMLOGCONFIG_LEVEL"); level != "" {
-		cfg.GormLogConfig.Level = level
-		log.Printf("通过环境变量覆盖了 GormLogConfig.Level: %s\n", level)
-	}
-	if enabled, err := strconv.ParseBool(os.Getenv("TRACERCONFIG_ENABLED")); err == nil {
-		cfg.TracerConfig.Enabled = enabled
-		log.Printf("通过环境变量覆盖了 TracerConfig.Enabled: %t\n", enabled)
-	}
-
-	// MySQL
-	if dsn := os.Getenv("MYSQLCONFIG_WRITE_DSN"); dsn != "" {
-		cfg.MySQLConfig.Write.DSN = dsn
-		log.Printf("通过环境变量覆盖了 MySQLConfig.Write.DSN\n")
-	}
-	if dsn := os.Getenv("MYSQLCONFIG_READ_0_DSN"); dsn != "" {
-		// 确保 Read 切片至少有一个元素可以被覆盖
-		if len(cfg.MySQLConfig.Read) == 0 {
-			cfg.MySQLConfig.Read = make([]appConfig.SourceConfig, 1)
-		}
-		cfg.MySQLConfig.Read[0].DSN = dsn
-		log.Printf("通过环境变量覆盖了 MySQLConfig.Read[0].DSN\n")
-	}
-
-	// Redis
-	if redisAddrWithPort := os.Getenv("REDISCONFIG_ADDRESS"); redisAddrWithPort != "" {
-		host, portStr, err := net.SplitHostPort(redisAddrWithPort)
-		if err == nil {
-			port, err := strconv.Atoi(portStr)
-			if err == nil {
-				cfg.RedisConfig.Address = host
-				cfg.RedisConfig.Port = port
-				log.Printf("通过环境变量覆盖了 Redis 连接: Host=%s, Port=%d\n", host, port)
-			}
-		}
-	}
-	if pass := os.Getenv("REDISCONFIG_PASSWORD"); pass != "" {
-		cfg.RedisConfig.Password = pass
-		log.Printf("通过环境变量覆盖了 RedisConfig.Password\n")
-	}
-
-	// Kafka
-	if brokers := os.Getenv("KAFKACONFIG_BROKERS"); brokers != "" {
-		cfg.KafkaConfig.Brokers = strings.Split(brokers, ",")
-		log.Printf("通过环境变量覆盖了 KafkaConfig.Brokers: %v\n", cfg.KafkaConfig.Brokers)
-	}
-
-	// COS (使用正确的 "postDetailImagesCosConfig" 前缀)
-	if id := os.Getenv("POSTDETAILIMAGESCOSCONFIG_SECRET_ID"); id != "" {
-		cfg.COSConfig.SecretID = id
-		log.Printf("通过环境变量覆盖了 COSConfig.SecretId\n")
-	}
-	if key := os.Getenv("POSTDETAILIMAGESCOSCONFIG_SECRET_KEY"); key != "" {
-		cfg.COSConfig.SecretKey = key
-		log.Printf("通过环境变量覆盖了 COSConfig.SecretKey\n")
-	}
-	if name := os.Getenv("POSTDETAILIMAGESCOSCONFIG_BUCKET_NAME"); name != "" {
-		cfg.COSConfig.BucketName = name
-		log.Printf("通过环境变量覆盖了 CosConfig.BucketName: %s\n", name)
-	}
-	if id := os.Getenv("POSTDETAILIMAGESCOSCONFIG_APP_ID"); id != "" {
-		cfg.COSConfig.AppID = id
-		log.Printf("通过环境变量覆盖了 CosConfig.AppId: %s\n", id)
-	}
-	if region := os.Getenv("POSTDETAILIMAGESCOSCONFIG_REGION"); region != "" {
-		cfg.COSConfig.Region = region
-		log.Printf("通过环境变量覆盖了 CosConfig.Region: %s\n", region)
-	}
-	if url := os.Getenv("POSTDETAILIMAGESCOSCONFIG_BASE_URL"); url != "" {
-		cfg.COSConfig.BaseURL = url
-		log.Printf("通过环境变量覆盖了 CosConfig.BaseURL: %s\n", url)
-	}
-	// --- 结束环境变量覆盖 ---
+	log.Printf("✅ 配置加载成功！最终生效的配置如下:\n%s\n", string(configBytes))
+	// --- 新增代码结束 ---
 
 	// 2. 初始化 Logger
 	logger, loggerErr := sharedCore.NewZapLogger(cfg.ZapConfig)
