@@ -3,7 +3,7 @@ module github.com/Xushengqwer/post_service
 go 1.23.7
 
 require (
-	github.com/Xushengqwer/go-common v0.0.0-20250602183145-e2bb5e355715
+	github.com/Xushengqwer/go-common v0.0.0-20250609053903-e9d21127601b
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0

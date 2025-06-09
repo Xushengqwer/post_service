@@ -13,6 +13,8 @@ github.com/Xushengqwer/go-common v0.0.0-20250602174942-e4c17a0adfea h1:rRaLcHZf5
 github.com/Xushengqwer/go-common v0.0.0-20250602174942-e4c17a0adfea/go.mod h1:nIHNu2ZicgA+QBRqHzTk5n1p/PpMVV/Uy0w1o/Q5fZY=
 github.com/Xushengqwer/go-common v0.0.0-20250602183145-e2bb5e355715 h1:oDQAlQmc5k/fd2x/57KrHb4i5zppph21HR20IiXwCc8=
 github.com/Xushengqwer/go-common v0.0.0-20250602183145-e2bb5e355715/go.mod h1:nIHNu2ZicgA+QBRqHzTk5n1p/PpMVV/Uy0w1o/Q5fZY=
+github.com/Xushengqwer/go-common v0.0.0-20250609053903-e9d21127601b h1:5+Qvv7Vqed+FN1K4h03SqwWBrjCtrPmf8IFjo/F7ytQ=
+github.com/Xushengqwer/go-common v0.0.0-20250609053903-e9d21127601b/go.mod h1:nIHNu2ZicgA+QBRqHzTk5n1p/PpMVV/Uy0w1o/Q5fZY=
 github.com/brianvoe/gofakeit/v6 v6.28.0 h1:Xib46XXuQfmlLS2EXRuJpqcw8St6qSZz75OUo0tgAW4=
 github.com/brianvoe/gofakeit/v6 v6.28.0/go.mod h1:Xj58BMSnFqcn/fAQeSK+/PLtC5kSb7FJIq4JyGa8vEs=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
