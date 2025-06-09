@@ -1,0 +1,71 @@
+# 文件路径: post_service/config/config.production.yaml
+
+# Zap 日志配置
+zapConfig:
+  level: "info"
+  encoding: "json"
+
+# GORM 日志配置
+gormLogConfig:
+  level: "warn"
+  slowThresholdMs: 200
+  skipCallerLookup: true
+  ignoreRecordNotFoundError: true
+
+# 服务器配置
+serverConfig:
+  listen_addr: "0.0.0.0"
+  port: "8082" # 将由环境变量覆盖
+  requestTimeout: 60s
+
+# 分布式追踪配置
+tracerConfig:
+  enabled: false # 生产环境建议开启
+  exporter_type: "otlp_grpc"
+  exporter_endpoint: "otel-collector:4317" # Docker 网络内的 Collector 地址
+  sampler_type: "parent_based_traceid_ratio"
+  sampler_param: 0.1
+
+# MySQL 配置 - [核心] 使用 Docker 服务名
+mysqlConfig:
+  write:
+    dsn: "root:root@tcp(mysql-primary:3306)/doer_post_service?charset=utf8mb4&parseTime=True&loc=Local"
+  read:
+    - dsn: "root:root@tcp(mysql-replica:3306)/doer_post_service?charset=utf8mb4&parseTime=True&loc=Local"
+  max_idle_conn: 10
+  max_open_conn: 100
+  conn_max_lifetime: 3600
+
+# Redis 配置 - [核心] 使用 Docker 服务名
+redisConfig:
+  address: "redis" # 直接使用服务名
+  port: 6379
+  password: "root"
+  db: 0
+
+# Kafka 配置 - [核心] 使用 Docker 服务名
+kafkaConfig:
+  brokers:
+    - "kafka-broker1:29092"
+    - "kafka-broker2:29093"
+  consumer_group_id: "post_service_prod_group" # 生产环境使用不同的消费者组ID
+  topics:
+    postPendingAudit: "post_pending_audit"
+    postAuditApproved: "post_audit_approved"
+    postAuditRejected: "post_audit_rejected"
+    postDeleted: "post_deleted"
+
+# 浏览量同步任务配置
+viewSync:
+  batchSize: 100
+  concurrencyLevel: 10
+  scanBatchSize: 2000
+
+# COS 配置 (这些值将由环境变量覆盖)
+postDetailImagesCosConfig:
+  secret_id: ""
+  secret_key: ""
+  bucket_name: "doer-post-detail"
+  app_id: "1258994983"
+  region: "ap-guangzhou"
+  base_url: "https://doer-post-detail-1258994983.cos.ap-guangzhou.myqcloud.com"
